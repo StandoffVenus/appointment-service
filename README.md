@@ -12,7 +12,7 @@ To initialize and run the service with Nix, execute the following:
 
 ```bash
 nix-shell
-make run
+make
 ```
 
 The service will now be running on port 8080 by default.
