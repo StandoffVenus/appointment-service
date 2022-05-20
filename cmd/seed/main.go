@@ -79,9 +79,9 @@ func main() {
 		formattedInsert := fmt.Sprintf(Insert, configuration.Table)
 		for _, apt := range appointments {
 			_, err := txn.ExecContext(ctx, formattedInsert,
-				sql.Named("id", toString[int](apt.ID)),
-				sql.Named("trainer_id", toString[int](apt.TrainerID)),
-				sql.Named("user_id", toString[int](apt.UserID)),
+				sql.Named("id", toString(apt.ID)),
+				sql.Named("trainer_id", toString(apt.TrainerID)),
+				sql.Named("user_id", toString(apt.UserID)),
 				sql.Named("start", apt.Start.Unix()),
 				sql.Named("end", apt.End.Unix()))
 			if err != nil {
@@ -105,4 +105,4 @@ type JSONAppointment struct {
 	Start     time.Time `json:"started_at"`
 }
 
-func toString[I int | int32 | int64](v int) string { return strconv.FormatInt(int64(v), 10) }
+func toString[I int | int32 | int64](v I) string { return strconv.FormatInt(int64(v), 10) }
