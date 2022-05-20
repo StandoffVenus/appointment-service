@@ -79,6 +79,23 @@ func (s *Service) ensureValidCreateTimes(start, end time.Time) error {
 		return err
 	}
 
+	if expectedEnd := start.Add(s.LengthOfAppointment); !expectedEnd.Equal(end) {
+		log.
+			Debug().
+			Fields(map[string]any{
+				"starts_at":        start,
+				"ends_at":          end,
+				"expected_ends_at": expectedEnd,
+			}).
+			Msg("Invalid appointment length from consumer.")
+
+		return fmt.Errorf("%w: invalid appointment length (must be %s)", ErrInvalidDateRange, s.LengthOfAppointment)
+	}
+
+	if start.Minute()%30 != 0 {
+		return fmt.Errorf("%w: appointment must be scheduled on :00 or :30", ErrInvalidDateRange)
+	}
+
 	if start.Before(time.Now()) {
 		return fmt.Errorf("%w: appointment for the past", ErrInvalidDateRange)
 	}
@@ -104,22 +121,8 @@ func (s *Service) ensureValidTimes(start, end time.Time) error {
 		return fmt.Errorf("%w: no start time", ErrInvalidDateRange)
 	}
 
-	expectedEnd := start.Add(s.LengthOfAppointment)
-	if start.IsZero() || !expectedEnd.Equal(end) {
-		log.
-			Debug().
-			Fields(map[string]any{
-				"starts_at":        start,
-				"ends_at":          end,
-				"expected_ends_at": expectedEnd,
-			}).
-			Msg("Invalid appointment length from consumer.")
-
-		return fmt.Errorf("%w: invalid appointment length (must be %s)", ErrInvalidDateRange, s.LengthOfAppointment)
-	}
-
-	if start.Minute()%30 != 0 {
-		return fmt.Errorf("%w: appointment must be scheduled on :00 or :30", ErrInvalidDateRange)
+	if end.IsZero() {
+		return fmt.Errorf("%w: no end time", ErrInvalidDateRange)
 	}
 
 	return nil

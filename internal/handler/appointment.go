@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/rs/zerolog/log"
 	"github.com/standoffvenus/future/internal/appointment"
 	"github.com/standoffvenus/future/internal/empty"
 )
@@ -76,14 +75,6 @@ func FindAppointmentsForTrainer(svc AppointmentService) Handler {
 		if !ok {
 			return BadRequest("no trainer ID provided"), nil
 		}
-
-		log.
-			Debug().
-			//Fields(map[string]any{
-			//	"start": r.QueryParameters.Get(QueryParameterStart),
-			//	"end":   r.QueryParameters.Get(QueryParameterEnd),
-			//}).
-			Msg("Finding appointments for trainer.")
 
 		if r.QueryParameters.Has(QueryParameterStart) || r.QueryParameters.Has(QueryParameterEnd) {
 			return findAppointmentsForTrainerInRange(r, svc, trainerID)
